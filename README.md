@@ -17,7 +17,7 @@ The agent operates on a ReAct (Reason + Act) loop. Upon execution, the agent obs
 
 ##  Project Overview
 
-This project demonstrates how e-commerce brands can deploy Agentic AI using Python, LangChain, Claude Code, and mock external tools (Shopify API & Buffer API).
+This project demonstrates how e-commerce brands can deploy Agentic AI using Python, LangChain, Claude AI, Claude Code, and mock external tools (Shopify API & Buffer API).
 
 The system begins when the scheduled CRON job wakes the agent. The agent is provided with a system prompt defining its persona and given access to specific tools (e.g., `check_inventory()`, `write_copy()`, `schedule_post()`). It autonomously decides which tools to use and in what order, routing its own outputs based on the results of its actions.
 
