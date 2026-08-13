@@ -10,7 +10,11 @@ Instead of manually checking stock and writing posts, this system gives an AI ag
 
 The agent operates on a ReAct (Reason + Act) loop. Upon execution, the agent observes the current inventory state, reasons about which products require urgent movement, uses tools to generate highly targeted copy, and finally executes API calls to schedule the content.
 
-https://github.com/rhain-r/ecommerce-agentic-brand-manager/raw/main/assets/agent-workflow.mp4 
+
+
+https://github.com/user-attachments/assets/3c402361-78e6-44d7-8ffc-e7804b9b5479
+
+
 
 ---
 
