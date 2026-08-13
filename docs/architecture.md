@@ -1,6 +1,3 @@
-# Architecture
-This project uses a ReAct (Reason + Act) loop powered by LangChain and Claude 3.5 Sonnet. The agent evaluates inputs, routes tasks to specific tools, and manages state using LangGraph.
-
 # Agentic Architecture Design
 
 This document outlines the system architecture for the Autonomous Brand Manager Agent, detailing how it leverages the ReAct (Reason + Act) methodology to manage e-commerce marketing with built-in enterprise safety mechanisms.
