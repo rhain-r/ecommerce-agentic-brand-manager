@@ -30,6 +30,7 @@ Each execution creates a unique trace of the agent's "Thought -> Action -> Obser
 *   **Platform-Specific Generation:** Adapts tone for Twitter, Instagram, and Email.
 *   **Self-Correction:** Validates character counts and formatting before attempting to post.
 *   **Memory Management:** Logs executed campaigns to prevent spamming the same product.
+*  **Human-in-the-Loop (HITL) Safety:** Pauses autonomous execution and routes generated drafts to a mock Slack channel for manager approval before going live.
 
 ---
 
