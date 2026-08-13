@@ -88,15 +88,22 @@ The agent maintains a memory log (vector database or flat file) to remember past
 ## Respository Structure
 
 ```
-docs/
-    architecture.md
-    tool-definitions.md
-    setup-guide.md
+.github/
+    workflows/             # CI/CD pipelines (GitHub Actions)
 agent/
-    main.py
-    tools.py
-    prompts.py
+    main.py                # Core agent ReAct loop
+    tools.py               # Shopify and Buffer mock API tools
+    prompts.py             # System prompts and personas
+    test_tools.py          # Pytest file for tool testing
 assets/
-    workflow-execution.jpg
+    workflow-execution.jpg # Visual proof of life
+docs/
+    architecture.md        # System design
+    setup-guide.md         # Instructions to run the agent
+    tool-definitions.md    # API tool documentation
+.gitignore
+LICENSE
+README.md
+requirements.txt           # Python dependencies
 ```
 
