@@ -10,7 +10,7 @@ Instead of manually checking stock and writing posts, this system gives an AI ag
 
 The agent operates on a ReAct (Reason + Act) loop. Upon execution, the agent observes the current inventory state, reasons about which products require urgent movement, uses tools to generate highly targeted copy, and finally executes API calls to schedule the content.
 
-<video src="assets/agent-workflow.mp4" controls="controls" muted="muted" class="d-block rounded-bottom-2 border-top width-fit" style="max-height:640px; min-height: 200px"></video>
+<video src="https://raw.githubusercontent.com/rhain-r/ecommerce-agentic-brand-manager/main/assets/agent-workflow.mp4" controls="controls" muted="muted" style="max-height:640px; width:100%;"></video>
 
 ---
 
@@ -54,7 +54,7 @@ The agent maintains a memory log (vector database or flat file) to remember past
 
 | Product SKU | Stock Level | Agent Decision | Executed Tools | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| SKU-9921 | 185 (High) | Urgent promotion | 'check_inventory, write_copy, send_slack_approval, schedule_post' | Completed |
+| SKU-9921 | 185 (High) | Urgent promotion | check_inventory, write_copy, send_slack_approval, schedule_post | Completed |
 | SKU-4012 | 12 (Low) | Skip promotion | None | Skipped |
 
 ---
