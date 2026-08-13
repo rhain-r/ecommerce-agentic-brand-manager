@@ -115,7 +115,8 @@ agent/
     prompts.py             # System prompts and personas
     test_tools.py          # Pytest file for tool testing
 assets/
-    workflow-execution.jpg # Visual proof of life
+    agent-configuration.png # Visual proof of life
+    agent-workflow.mp4      # Agent execution recording
 docs/
     architecture.md        # System design
     setup-guide.md         # Instructions to run the agent
