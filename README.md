@@ -10,9 +10,6 @@ Instead of manually checking stock and writing posts, this system gives an AI ag
 
 The agent operates on a ReAct (Reason + Act) loop. Upon execution, the agent observes the current inventory state, reasons about which products require urgent movement, uses tools to generate highly targeted copy, and finally executes API calls to schedule the content.
 
-![Agent Execution Workflow](./assets/workflow-execution.png)
-
-
 ---
 
 ##  Project Overview
@@ -33,6 +30,12 @@ Each execution creates a unique trace of the agent's "Thought -> Action -> Obser
 *   **Platform-Specific Generation:** Adapts tone for Twitter, Instagram, and Email.
 *   **Self-Correction:** Validates character counts and formatting before attempting to post.
 *   **Memory Management:** Logs executed campaigns to prevent spamming the same product.
+
+---
+
+## Agent Configuration
+
+![Agent Execution Workflow](./assets/workflow-execution.png)
 
 ---
 
