@@ -65,13 +65,16 @@ The agent maintains a memory log (vector database or flat file) to remember past
 [ Reasoning ] ────────► "SKU-9921 is overstocked. I need to run a flash sale."
        │
        ▼
-[ Action ] ◄─────────── Use Tool: generate_copy(SKU-9921, platform="twitter")
+[ Action ] ◄─────────── Use Tool: generate_copy(SKU-9921, platform="Slack")
        │
        ▼
 [ Verification ] ─────► "Does this meet brand guidelines?"
        │
        ▼
-[ Execution ] ────────► Use Tool: schedule_campaign()
+[ HITL Approval ] ────► Use Tool: send_slack_approval() -> Wait for human input
+       │
+       ▼
+[ Execution ] ────────► Use Tool: schedule_campaign() (Only if Approved)
 ```
 
 ---
