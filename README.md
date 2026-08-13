@@ -35,7 +35,7 @@ Each execution creates a unique trace of the agent's "Thought -> Action -> Obser
 
 ## Agent Configuration
 
-![Agent Execution Workflow](./assets/workflow-execution.png)
+![Agent Configuration Demonstration](./assets/agent-configuration.png)
 
 ---
 
