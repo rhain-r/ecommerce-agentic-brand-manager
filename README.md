@@ -10,7 +10,7 @@ Instead of manually checking stock and writing posts, this system gives an AI ag
 
 The agent operates on a ReAct (Reason + Act) loop. Upon execution, the agent observes the current inventory state, reasons about which products require urgent movement, uses tools to generate highly targeted copy, and finally executes API calls to schedule the content.
 
-![Agent Workflow Demonstration](./assets/agent-workflow.mp4) <--- click and download the video
+<video src="assets/agent-workflow.mp4" controls="controls" muted="muted" class="d-block rounded-bottom-2 border-top width-fit" style="max-height:640px; min-height: 200px"></video>
 
 ---
 
@@ -18,9 +18,15 @@ The agent operates on a ReAct (Reason + Act) loop. Upon execution, the agent obs
 
 This project demonstrates how e-commerce brands can deploy Agentic AI using Python, LangChain, Claude AI, Claude Code, and mock external tools (Shopify API & Buffer API).
 
-The system begins when the scheduled CRON job wakes the agent. The agent is provided with a system prompt defining its persona and given access to specific tools (e.g., `check_inventory()`, `write_copy()`, `schedule_post()`). It autonomously decides which tools to use and in what order, routing its own outputs based on the results of its actions.
-
 Each execution creates a unique trace of the agent's "Thought -> Action -> Observation" process.
+
+Observe (Shopify): The agent monitors product catalog APIs to identify slow-moving or overstocked inventory requiring urgent promotion.
+
+Reason (LLM): Using strict system prompts, the agent evaluates the stock data and generates platform-specific marketing copy tailored to the brand's voice.
+
+Validate (Slack HITL): Before execution, the agent pauses the workflow and routes the draft to a mock Slack #marketing-approvals channel, ensuring zero unapproved external communications.
+
+Execute (Buffer): Upon receiving human approval, the agent automatically schedules the optimized post via the Buffer API.
 
 ---
 
@@ -29,7 +35,7 @@ Each execution creates a unique trace of the agent's "Thought -> Action -> Obser
 *   **Autonomous Tool Selection:** Chooses the right tool for the job without human intervention.
 *   **Inventory Observation:** Uses API tools to fetch real-time product data and margins.
 *   **Urgency Reasoning:** Calculates stock-to-sales ratios to identify overstocked SKUs.
-*   **Platform-Specific Generation:** Adapts tone for Twitter, Instagram, and Email.
+*   **Platform-Specific Generation:** Adapts tone for Instagram, Facebook and Email (Via SendGrid).
 *   **Self-Correction:** Validates character counts and formatting before attempting to post.
 *   **Memory Management:** Logs executed campaigns to prevent spamming the same product.
 *  **Human-in-the-Loop (HITL) Safety:** Pauses autonomous execution and routes generated drafts to a mock Slack channel for manager approval before going live.
@@ -48,7 +54,7 @@ The agent maintains a memory log (vector database or flat file) to remember past
 
 | Product SKU | Stock Level | Agent Decision | Executed Tools | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| SKU-9921 | 185 (High) | Needs immediate promotion | `generate_ig_post`, `schedule_buffer` | Completed |
+| SKU-9921 | 185 (High) | Urgent promotion | 'check_inventory, write_copy, send_slack_approval, schedule_post' | Completed |
 | SKU-4012 | 12 (Low) | Skip promotion | None | Skipped |
 
 ---
@@ -68,7 +74,7 @@ The agent maintains a memory log (vector database or flat file) to remember past
 [ Reasoning ] ────────► "SKU-9921 is overstocked. I need to run a flash sale."
        │
        ▼
-[ Action ] ◄─────────── Use Tool: generate_copy(SKU-9921, platform="Slack")
+[ Action ] ◄─────────── Use Tool: generate_copy(SKU-9921, platform="Instagram")
        │
        ▼
 [ Verification ] ─────► "Does this meet brand guidelines?"
