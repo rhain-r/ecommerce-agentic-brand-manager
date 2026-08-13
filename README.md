@@ -10,9 +10,6 @@ Instead of manually checking stock and writing posts, this system gives an AI ag
 
 The agent operates on a ReAct (Reason + Act) loop. Upon execution, the agent observes the current inventory state, reasons about which products require urgent movement, uses tools to generate highly targeted copy, and finally executes API calls to schedule the content.
 
-![Agent Execution Workflow](./assets/workflow-execution.png)
-
-
 ---
 
 ##  Project Overview
@@ -33,6 +30,12 @@ Each execution creates a unique trace of the agent's "Thought -> Action -> Obser
 *   **Platform-Specific Generation:** Adapts tone for Twitter, Instagram, and Email.
 *   **Self-Correction:** Validates character counts and formatting before attempting to post.
 *   **Memory Management:** Logs executed campaigns to prevent spamming the same product.
+
+---
+
+## Agent Configuration
+
+![Agent Execution Workflow](./assets/workflow-execution.png)
 
 ---
 
@@ -88,15 +91,22 @@ The agent maintains a memory log (vector database or flat file) to remember past
 ## Respository Structure
 
 ```
-docs/
-    architecture.md
-    tool-definitions.md
-    setup-guide.md
+.github/
+    workflows/             # CI/CD pipelines (GitHub Actions)
 agent/
-    main.py
-    tools.py
-    prompts.py
+    main.py                # Core agent ReAct loop
+    tools.py               # Shopify and Buffer mock API tools
+    prompts.py             # System prompts and personas
+    test_tools.py          # Pytest file for tool testing
 assets/
-    workflow-execution.jpg
+    workflow-execution.jpg # Visual proof of life
+docs/
+    architecture.md        # System design
+    setup-guide.md         # Instructions to run the agent
+    tool-definitions.md    # API tool documentation
+.gitignore
+LICENSE
+README.md
+requirements.txt           # Python dependencies
 ```
 
