@@ -6,6 +6,14 @@ Instead of manually checking stock and writing posts, this system gives an AI ag
 
 ---
 
+## Live Demo
+
+**[rhain-r.github.io/ecommerce-agentic-brand-manager](https://rhain-r.github.io/ecommerce-agentic-brand-manager/)**
+
+An interactive, beginner-friendly walkthrough of the agent's decision-making — pick a product, see why the agent flagged it (or didn't), and approve or reject a drafted post. Runs entirely on sample data, no live store connected.
+
+---
+
 ## Agentic Workflow Execution
 
 The agent operates on a ReAct (Reason + Act) loop. Upon execution, the agent observes the current inventory state, reasons about which products require urgent movement, uses tools to generate highly targeted copy, and finally executes API calls to schedule the content.
@@ -122,6 +130,7 @@ docs/
     setup-guide.md         # Instructions to run the agent
     tool-definitions.md    # API tool documentation
 .gitignore
+index.html                 # Live demo dashboard (GitHub Pages)
 LICENSE
 README.md
 requirements.txt           # Python dependencies
