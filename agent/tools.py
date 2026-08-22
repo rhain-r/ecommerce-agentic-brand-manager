@@ -49,6 +49,25 @@ def schedule_post(content: str, post_time: str) -> dict:
         ],
     }
 
+def send_slack_approval(draft_copy: str, sku: str) -> str:
+    """
+    Sends a draft to the marketing team for approval before posting.
+    The agent MUST use this before scheduling.
+    """
+    print("\n" + "="*50)
+    print("🚨 [SLACK NOTIFICATION - #marketing-approvals]")
+    print(f"📦 Product: {sku}")
+    print(f"📝 Draft Copy: '{draft_copy}'")
+    print("="*50)
+    
+    # This literally pauses the terminal and waits for human input!
+    decision = input("👉 Human Manager, type 'approve' to proceed or 'reject' to cancel: ").strip().lower()
+    
+    if decision == 'approve':
+        return "Observation: Status Approved. The human has permitted you to use schedule_campaign."
+    else:
+        return "Observation: Status Rejected. Do not schedule this post. End the workflow."
+
 
 if __name__ == "__main__":
     print(check_inventory("Blue T-Shirt"))
