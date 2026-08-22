@@ -8,10 +8,8 @@ Instead of manually checking stock and writing posts, this system gives an AI ag
 
 ## Try it out!
 
-| [Live](https://rhain-r.github.io/ecommerce-agentic-brand-manager/) | A guided walkthrough |
+| [Live &rarr;](https://rhain-r.github.io/ecommerce-agentic-brand-manager/) | A guided walkthrough |
 | --- | --- |
-
-An interactive, beginner-friendly walkthrough of the agent's decision-making — pick a product, see why the agent flagged it (or didn't), and approve or reject a drafted post. Runs entirely on sample data, no live store connected.
 
 ---
 
