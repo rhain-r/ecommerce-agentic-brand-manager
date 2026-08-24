@@ -8,7 +8,7 @@ Instead of manually checking stock and writing posts, this system gives an AI ag
 
 ## Try it out!
 
-| [Live &rarr;](https://rhain-r.github.io/ecommerce-agentic-brand-manager/) | A guided walkthrough |
+| [Live &rarr;](https://rhain-r.github.io/ecommerce-agentic-brand-manager/agent) | A guided walkthrough |
 | --- | --- |
 
 ---
