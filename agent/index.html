@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brand Manager Agent</title>
+<meta name="description" content="A guided look at how the Brand Manager Agent watches your inventory, drafts marketing posts, and waits for your OK before anything goes live.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    --bg: #0a0d14;
+    --surface: #121726;
+    --surface-2: #1a2136;
+    --surface-3: #232b44;
+    --border: #262e45;
+    --border-soft: #1b2236;
+    --text: #eef0f7;
+    --text-muted: #a4abc4;
+    --text-faint: #6b7391;
+
+    --accent: #7c5cff;
+    --accent-strong: #a793ff;
+    --accent-dim: rgba(124, 92, 255, 0.15);
+    --accent-dim-2: rgba(124, 92, 255, 0.3);
+
+    --info: #4fb6ff;
+    --info-dim: rgba(79, 182, 255, 0.15);
+
+    --success: #2bc48f;
+    --success-dim: rgba(43, 196, 143, 0.15);
+
+    --warning: #f2a93b;
+    --warning-dim: rgba(242, 169, 59, 0.15);
+
+    --danger: #ff5c7a;
+    --danger-dim: rgba(255, 92, 122, 0.15);
+
+    --font-ui: "Hanken Grotesk", "Segoe UI", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+    --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 72px;
+    --radius-sm: 8px; --radius-md: 12px; --radius-lg: 20px;
+    --shadow-panel: 0 1px 0 rgba(255,255,255,0.03) inset, 0 24px 48px -28px rgba(0,0,0,0.65);
+  }
+
+  * { box-sizing: border-box; }
+  html { color-scheme: dark; scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    background-image:
+      radial-gradient(820px 460px at 12% -10%, rgba(124,92,255,0.16), transparent 60%),
+      radial-gradient(620px 380px at 90% 4%, rgba(79,182,255,0.08), transparent 60%);
+    background-attachment: fixed;
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { margin: 0; text-wrap: balance; }
+  p { margin: 0; }
+  button { font-family: inherit; color: inherit; }
+  ::selection { background: var(--accent-dim-2); }
+  a { color: var(--accent-strong); }
+
+  button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--accent-strong);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+
+  .mono { font-family: var(--font-mono); }
+  .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 var(--sp-5); }
+  .wrap-wide { max-width: 1080px; margin: 0 auto; padding: 0 var(--sp-5); }
+
+  /* ============ HERO ============ */
+  .hero { padding: var(--sp-8) 0 var(--sp-7); text-align: center; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--surface); border: 1px solid var(--border);
+    padding: 7px 14px; border-radius: 999px;
+    font-size: 0.8125rem; color: var(--text-muted); margin-bottom: var(--sp-5);
+  }
+  .hero-badge .dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--success); flex: none; }
+  .hero-badge .dot::after {
+    content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--success);
+    animation: ping 2.4s cubic-bezier(.3,0,.4,1) infinite;
+  }
+  @keyframes ping { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(3); opacity: 0; } }
+  .hero h1 {
+    font-size: clamp(2.1rem, 5vw, 3.1rem);
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    margin-bottom: var(--sp-4);
+  }
+  .hero h1 span { color: var(--accent-strong); }
+  .hero p.lede {
+    max-width: 62ch; margin: 0 auto; color: var(--text-muted);
+    font-size: 1.125rem; line-height: 1.65;
+  }
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: var(--sp-6);
+    background: var(--accent); color: #fff;
+    font-weight: 700; font-size: 0.9375rem;
+    padding: 13px 22px; border-radius: var(--radius-md);
+    text-decoration: none;
+    box-shadow: 0 14px 30px -12px rgba(124,92,255,0.7);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .hero-cta:hover { transform: translateY(-1px); box-shadow: 0 18px 34px -12px rgba(124,92,255,0.85); }
+
+  /* ============ SECTION SHELL ============ */
+  section { padding: var(--sp-7) 0; }
+  .section-head { text-align: center; margin-bottom: var(--sp-6); }
+  .eyebrow {
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--accent-strong); margin-bottom: var(--sp-2);
+  }
+  .section-head h2 { font-size: clamp(1.5rem, 3vw, 1.9rem); font-weight: 800; margin-bottom: var(--sp-3); }
+  .section-head p { color: var(--text-muted); max-width: 60ch; margin: 0 auto; font-size: 1.0625rem; }
+
+  hr.divider { border: none; border-top: 1px solid var(--border-soft); margin: 0; }
+
+  /* ============ HOW IT WORKS ============ */
+  .steps { display: flex; flex-direction: column; gap: var(--sp-3); }
+  .step {
+    display: flex; align-items: flex-start; gap: var(--sp-4);
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-md); padding: var(--sp-4) var(--sp-5);
+  }
+  .step-num {
+    flex: none; width: 40px; height: 40px; border-radius: 50%;
+    background: var(--accent-dim); border: 1px solid var(--accent-dim-2);
+    color: var(--accent-strong); font-family: var(--font-mono); font-weight: 700;
+    display: grid; place-items: center; font-size: 1.0625rem;
+  }
+  .step-body h3 { font-size: 1.0625rem; font-weight: 700; margin-bottom: 3px; }
+  .step-body p { color: var(--text-muted); font-size: 0.9375rem; }
+  .step-connector { width: 1.5px; height: var(--sp-3); background: var(--border); margin-left: 32px; }
+
+  /* ============ TRY IT ============ */
+  .try-picker {
+    display: flex; flex-wrap: wrap; gap: var(--sp-2);
+    justify-content: center; margin-bottom: var(--sp-6);
+  }
+  .pick-btn {
+    background: var(--surface); border: 1px solid var(--border); color: var(--text);
+    padding: 11px 18px; border-radius: 999px; font-size: 0.9375rem; font-weight: 600;
+    cursor: pointer; transition: background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .pick-btn:hover { border-color: var(--accent-dim-2); }
+  .pick-btn.is-active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .result-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); box-shadow: var(--shadow-panel);
+    padding: var(--sp-6);
+  }
+  .result-top { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; margin-bottom: var(--sp-3); }
+  .result-product { font-size: 1.3125rem; font-weight: 800; }
+  .result-sku { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--text-faint); }
+  .verdict-line { display: flex; align-items: flex-start; gap: 10px; margin-bottom: var(--sp-4); }
+  .verdict-icon { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; margin-top: 1px; }
+  .verdict-text { font-size: 1.0625rem; color: var(--text); line-height: 1.55; }
+
+  .reason-toggle {
+    background: transparent; border: 1px dashed var(--border); color: var(--text-muted);
+    font-size: 0.8125rem; font-weight: 600; padding: 8px 13px; border-radius: var(--radius-sm);
+    cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .reason-toggle:hover { border-color: var(--accent-dim-2); color: var(--text); }
+  .reason-toggle svg { transition: transform .18s ease; }
+  .reason-toggle.is-open svg { transform: rotate(180deg); }
+  .reason-box {
+    margin-top: var(--sp-3); background: var(--surface-2); border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm); padding: var(--sp-4);
+    font-family: var(--font-mono); font-size: 0.8125rem; color: var(--text-muted); line-height: 1.7;
+    display: none;
+  }
+  .reason-box.is-visible { display: block; }
+
+  .draft {
+    margin-top: var(--sp-5); padding-top: var(--sp-5); border-top: 1px solid var(--border-soft);
+  }
+  .draft-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: var(--sp-2); }
+  .draft-card { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: var(--sp-4); }
+  .draft-platform {
+    display: inline-flex; font-size: 0.75rem; font-weight: 700; color: var(--accent-strong);
+    background: var(--accent-dim); border: 1px solid var(--accent-dim-2);
+    padding: 3px 10px; border-radius: 999px; margin-bottom: var(--sp-3);
+  }
+  .draft-copy { font-size: 1rem; line-height: 1.6; margin-bottom: var(--sp-4); }
+  .draft-actions { display: flex; gap: var(--sp-3); flex-wrap: wrap; }
+  .btn {
+    font-size: 0.9375rem; font-weight: 700; padding: 12px 20px; border-radius: var(--radius-sm);
+    border: 1px solid transparent; cursor: pointer; transition: filter .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .btn-approve { background: var(--success); color: #052e22; }
+  .btn-approve:hover { filter: brightness(1.08); }
+  .btn-reject { background: transparent; border-color: var(--border); color: var(--text-muted); }
+  .btn-reject:hover { border-color: var(--danger); color: var(--danger); }
+  .outcome {
+    margin-top: var(--sp-4); padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-sm);
+    font-size: 0.9375rem; font-weight: 600; display: none; align-items: center; gap: 8px;
+  }
+  .outcome.is-visible { display: flex; }
+  .outcome.approved { background: var(--success-dim); color: var(--success); border: 1px solid rgba(43,196,143,0.35); }
+  .outcome.rejected { background: var(--danger-dim); color: var(--danger); border: 1px solid rgba(255,92,122,0.35); }
+
+  /* ============ PRODUCT TABLE ============ */
+  .table-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-panel); overflow: hidden; }
+  .table-controls {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); flex-wrap: wrap;
+    padding: var(--sp-4) var(--sp-5); border-bottom: 1px solid var(--border-soft);
+  }
+  .filter-group { display: inline-flex; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 3px; gap: 2px; }
+  .filter-btn { background: transparent; border: none; color: var(--text-muted); font-size: 0.8125rem; font-weight: 600; padding: 8px 13px; border-radius: 6px; cursor: pointer; transition: background .15s ease, color .15s ease; white-space: nowrap; }
+  .filter-btn:hover { color: var(--text); }
+  .filter-btn.is-active { background: var(--accent); color: #fff; }
+  .detail-toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 0.8125rem; color: var(--text-muted); cursor: pointer; user-select: none; }
+  .switch { position: relative; width: 36px; height: 20px; background: var(--surface-3); border: 1px solid var(--border); border-radius: 999px; flex: none; transition: background .15s ease; }
+  .switch::after { content: ""; position: absolute; top: 1px; left: 1px; width: 16px; height: 16px; border-radius: 50%; background: var(--text-faint); transition: transform .15s ease, background .15s ease; }
+  input.detail-check { position: absolute; opacity: 0; width: 0; height: 0; }
+  input.detail-check:checked + .switch { background: var(--accent-dim-2); border-color: var(--accent-strong); }
+  input.detail-check:checked + .switch::after { transform: translateX(16px); background: var(--accent-strong); }
+
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 560px; }
+  thead th {
+    text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-faint); font-weight: 700; padding: var(--sp-3) var(--sp-5);
+    border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  tbody td { padding: var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--border-soft); font-size: 0.9375rem; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-2); }
+  .cell-product { font-weight: 600; }
+  .cell-sku { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-faint); display: block; margin-top: 2px; }
+  .cell-num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .tech-col { display: none; }
+  table.show-tech .tech-col { display: table-cell; }
+  .tool-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .tool-chip { font-family: var(--font-mono); font-size: 10px; background: var(--surface-3); border: 1px solid var(--border); color: var(--text-muted); padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+  .pill { font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap; display: inline-block; }
+  .pill-success { background: var(--success-dim); color: var(--success); border: 1px solid rgba(43,196,143,0.35); }
+  .pill-warning { background: var(--warning-dim); color: var(--warning); border: 1px solid rgba(242,169,59,0.35); }
+  .pill-info { background: var(--info-dim); color: var(--info); border: 1px solid rgba(79,182,255,0.35); }
+  .pill-neutral { background: var(--surface-3); color: var(--text-faint); border: 1px solid var(--border); }
+  .table-foot { padding: var(--sp-3) var(--sp-5); font-size: 0.8125rem; color: var(--text-faint); border-top: 1px solid var(--border-soft); }
+
+  /* ============ FOOTER ============ */
+  footer { text-align: center; padding: var(--sp-7) 0 var(--sp-6); color: var(--text-faint); font-size: 0.8125rem; }
+  footer a { color: var(--text-muted); }
+
+  @media (max-width: 640px) {
+    .wrap, .wrap-wide { padding: 0 var(--sp-4); }
+    .hero { padding: var(--sp-7) 0 var(--sp-6); }
+    section { padding: var(--sp-6) 0; }
+    .result-card { padding: var(--sp-4); }
+    .table-controls { flex-direction: column; align-items: stretch; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============ HERO ============ -->
+  <header class="hero wrap">
+    <div class="hero-badge"><span class="dot"></span> Monitoring 428 products right now</div>
+    <h1>Your store has a <span>Brand Manager Agent</span> watching it 24/7</h1>
+    <p class="lede">It checks your inventory, figures out which products need a promotional push, writes the post for you — and always asks before anything goes live.</p>
+    <a href="#try-it" class="hero-cta">See it in action ↓</a>
+  </header>
+
+  <hr class="divider">
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section class="wrap" aria-labelledby="how-heading">
+    <div class="section-head">
+      <div class="eyebrow">How it works</div>
+      <h2 id="how-heading">Five steps, no surprises</h2>
+      <p>Nothing here is a black box — here's the entire loop the agent runs, in plain English.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><h3>Check the shelves</h3><p>Every few hours, the agent looks at how much of each product is left in stock.</p></div></div>
+      <div class="step-connector"></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><h3>Spot the slow movers</h3><p>It compares stock levels to how fast each product is actually selling, and flags anything piling up.</p></div></div>
+      <div class="step-connector"></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><h3>Write the post</h3><p>For each flagged product, it drafts a short, ready-to-publish marketing message.</p></div></div>
+      <div class="step-connector"></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><h3>Ask you first</h3><p>Nothing goes out without your OK — the draft lands in your approval queue, just like a Slack message.</p></div></div>
+      <div class="step-connector"></div>
+      <div class="step"><div class="step-num">5</div><div class="step-body"><h3>Publish it</h3><p>Once you approve, the post is scheduled automatically. No copy-pasting into another app.</p></div></div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ============ TRY IT ============ -->
+  <section class="wrap" id="try-it" aria-labelledby="try-heading">
+    <div class="section-head">
+      <div class="eyebrow">Try it yourself</div>
+      <h2 id="try-heading">Pick a product, see what the agent decided</h2>
+      <p>This uses sample data so you can safely click around — nothing here touches a real store.</p>
+    </div>
+
+    <div class="try-picker" id="try-picker" role="tablist" aria-label="Choose a product"></div>
+
+    <div class="result-card" id="result-card"></div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ============ PRODUCT LIST ============ -->
+  <section class="wrap-wide" aria-labelledby="list-heading">
+    <div class="section-head">
+      <div class="eyebrow">Full picture</div>
+      <h2 id="list-heading">Every product the agent is watching</h2>
+      <p>A quick way to scan the whole catalog. Flip on technical details if you want the numbers behind each decision.</p>
+    </div>
+
+    <div class="table-panel">
+      <div class="table-controls">
+        <div class="filter-group" id="filter-group">
+          <button class="filter-btn is-active" data-filter="all" type="button">All products</button>
+          <button class="filter-btn" data-filter="push" type="button">Needs a push</button>
+          <button class="filter-btn" data-filter="fine" type="button">Doesn't need promotion</button>
+        </div>
+        <label class="detail-toggle">
+          <input type="checkbox" class="detail-check" id="detail-check">
+          <span class="switch" aria-hidden="true"></span>
+          Show technical details
+        </label>
+      </div>
+      <div class="table-scroll">
+        <table id="inventory-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th style="text-align:right;">Stock</th>
+              <th class="tech-col" style="text-align:right;">Weeks of supply</th>
+              <th class="tech-col">Tools it ran</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="inventory-body"></tbody>
+        </table>
+      </div>
+      <div class="table-foot" id="table-foot"></div>
+    </div>
+  </section>
+
+  <footer class="wrap">
+    Autonomous Brand Manager Agent — demo built with sample data, no live store connected.<br>
+    <a href="https://github.com/rhain-r/ecommerce-agentic-brand-manager" target="_blank" rel="noopener">View the source on GitHub</a>
+  </footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var PRODUCTS = [
+    {
+      sku: "TOY-1042", name: "Rocket Building Blocks", stock: 412, ratio: 9.8, verdict: "push",
+      plain: "You've got 412 of these in stock — a lot more than what's selling. The agent wants to run a sale.",
+      technical: "Stock-to-sales ratio: 9.8x (about 9.8 weeks of supply at the current sell-through rate). Anything above 3x is treated as overstocked.\n\nTools run: check_inventory() → write_copy() → send_slack_approval()",
+      draft: { platform: "Instagram", copy: "Our Rocket Building Blocks are stocked sky-high — literally. Grab yours at 25% off before we run out of room to store them." }
+    },
+    {
+      sku: "TOY-1043", name: "Cuddly Dino Plush", stock: 385, ratio: 11.2, verdict: "push",
+      plain: "385 in stock and barely moving — a strong candidate for a promotion.",
+      technical: "Stock-to-sales ratio: 11.2x — the second-highest urgency score this cycle.\n\nTools run: check_inventory() → write_copy() → send_slack_approval()",
+      draft: { platform: "Instagram", copy: "Our Cuddly Dino Plush is having a moment — literally overstocked and adorable. Take 25% off this week only, before the herd thins out." }
+    },
+    {
+      sku: "TOY-1049", name: "Sticker Book Mega Pack", stock: 301, ratio: 10.4, verdict: "push",
+      plain: "This is the highest-priority item this week — well overstocked.",
+      technical: "Stock-to-sales ratio: 10.4x, the top urgency score this cycle.\n\nTools run: check_inventory() → write_copy() → send_slack_approval()",
+      draft: { platform: "Facebook", copy: "500+ stickers, endless decorating power. The Sticker Book Mega Pack is stocked deep and priced to move — 20% off, ends Sunday." }
+    },
+    {
+      sku: "TOY-1044", name: "Remote Control Race Car", stock: 58, ratio: 2.1, verdict: "ok",
+      plain: "Stock and sales are balanced here — nothing for the agent to do.",
+      technical: "Stock-to-sales ratio: 2.1x, comfortably inside the healthy range.\n\nTools run: check_inventory()"
+    },
+    {
+      sku: "TOY-1046", name: "Glow-in-the-Dark Puzzle Cube", stock: 22, ratio: 0.9, verdict: "restock",
+      plain: "This one's actually running low. A sale would risk selling out completely.",
+      technical: "Stock-to-sales ratio: 0.9x — below the reorder threshold. Flagged for restocking, not promotion.\n\nTools run: check_inventory()"
+    },
+    {
+      sku: "TOY-1051", name: "Water Balloon Launcher", stock: 198, ratio: 6.1, verdict: "watch",
+      plain: "Stock's a little higher than usual, but not enough to act on yet — the agent is just keeping an eye on it.",
+      technical: "Stock-to-sales ratio: 6.1x — above target but below the 8x action threshold.\n\nTools run: check_inventory()"
+    }
+  ];
+
+  var TABLE_ROWS = PRODUCTS.concat([
+    { sku: "TOY-1045", name: "Rainbow Art Kit", stock: 340, ratio: 8.6, verdict: "push", tools: ["check_inventory", "write_copy", "schedule_post"] },
+    { sku: "TOY-1047", name: "Wooden Marble Run", stock: 276, ratio: 7.4, verdict: "push", tools: ["check_inventory", "write_copy", "schedule_post"] },
+    { sku: "TOY-1048", name: "Plush Unicorn Backpack", stock: 19, ratio: 1.2, verdict: "ok", tools: ["check_inventory"] },
+    { sku: "TOY-1050", name: "Robot Building Kit", stock: 44, ratio: 1.8, verdict: "ok", tools: ["check_inventory"] },
+    { sku: "TOY-1052", name: "Fairy Lights Tent", stock: 260, ratio: 7.9, verdict: "push", tools: ["check_inventory", "write_copy", "schedule_post"] },
+    { sku: "TOY-1053", name: "Dino Excavation Kit", stock: 33, ratio: 1.5, verdict: "ok", tools: ["check_inventory"] }
+  ].map(function (r) { return r; }));
+
+  // give the first six a default `tools` list too, for the technical-detail table view
+  PRODUCTS.forEach(function (p) {
+    if (p.verdict === "push") p.tools = ["check_inventory", "write_copy", "send_slack_approval"];
+    else p.tools = ["check_inventory"];
+  });
+
+  var STATUS = {
+    push: { label: "Needs a Push", pill: "pill-warning" },
+    ok: { label: "All Good", pill: "pill-success" },
+    restock: { label: "Low Stock", pill: "pill-info" },
+    watch: { label: "Watching", pill: "pill-neutral" }
+  };
+
+  var iconFor = {
+    push: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.9 5.8H20l-4.8 3.6L17 18l-5-3.6L7 18l1.8-5.6L4 8.8h6.1L12 3z" fill="currentColor"/></svg>',
+    ok: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    restock: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 4v10m0 0l-3.5-3.5M12 14l3.5-3.5M5 19h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    watch: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"/><path d="M12 8v4l2.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'
+  };
+  var verdictColor = { push: "var(--warning)", ok: "var(--success)", restock: "var(--info)", watch: "var(--text-faint)" };
+  var verdictBg = { push: "var(--warning-dim)", ok: "var(--success-dim)", restock: "var(--info-dim)", watch: "var(--surface-3)" };
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  var state = { selectedSku: PRODUCTS[0].sku, reasonOpen: false, decisions: {}, filter: "all" };
+
+  /* ---------------- TRY IT WIDGET ---------------- */
+
+  function renderPicker() {
+    var el = document.getElementById("try-picker");
+    el.innerHTML = PRODUCTS.map(function (p) {
+      var active = p.sku === state.selectedSku ? " is-active" : "";
+      return '<button type="button" class="pick-btn' + active + '" data-sku="' + p.sku + '">' + esc(p.name) + "</button>";
+    }).join("");
+  }
+
+  function renderResult() {
+    var p = PRODUCTS.filter(function (x) { return x.sku === state.selectedSku; })[0];
+    var card = document.getElementById("result-card");
+    var decision = state.decisions[p.sku];
+
+    var draftHtml = "";
+    if (p.draft) {
+      var outcomeHtml = "";
+      if (decision === "approved") {
+        outcomeHtml = '<div class="outcome approved is-visible">✅ Approved — this will be scheduled and posted automatically.</div>';
+      } else if (decision === "rejected") {
+        outcomeHtml = '<div class="outcome rejected is-visible">🚫 Rejected — this draft will not be posted.</div>';
+      }
+      var actionsHtml = decision
+        ? ""
+        : '<div class="draft-actions">' +
+            '<button type="button" class="btn btn-approve" data-decide="approved">👍 Approve &amp; schedule</button>' +
+            '<button type="button" class="btn btn-reject" data-decide="rejected">👎 Reject</button>' +
+          "</div>";
+
+      draftHtml =
+        '<div class="draft">' +
+          '<div class="draft-label">Drafted post — waiting on you</div>' +
+          '<div class="draft-card">' +
+            '<span class="draft-platform">' + esc(p.draft.platform) + "</span>" +
+            '<p class="draft-copy">' + esc(p.draft.copy) + "</p>" +
+            actionsHtml +
+            outcomeHtml +
+          "</div>" +
+        "</div>";
+    }
+
+    card.innerHTML =
+      '<div class="result-top">' +
+        '<span class="result-product">' + esc(p.name) + "</span>" +
+        '<span class="result-sku">' + esc(p.sku) + "</span>" +
+      "</div>" +
+      '<div class="verdict-line">' +
+        '<span class="verdict-icon" style="color:' + verdictColor[p.verdict] + ";background:" + verdictBg[p.verdict] + '">' + iconFor[p.verdict] + "</span>" +
+        '<span class="verdict-text">' + esc(p.plain) + "</span>" +
+      "</div>" +
+      '<button type="button" class="reason-toggle' + (state.reasonOpen ? " is-open" : "") + '" id="reason-toggle">' +
+        "Why did it decide this? " +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+      "</button>" +
+      '<div class="reason-box' + (state.reasonOpen ? " is-visible" : "") + '" id="reason-box">' + esc(p.technical).replace(/\n/g, "<br>") + "</div>" +
+      draftHtml;
+  }
+
+  document.getElementById("try-picker").addEventListener("click", function (e) {
+    var btn = e.target.closest(".pick-btn");
+    if (!btn) return;
+    state.selectedSku = btn.dataset.sku;
+    state.reasonOpen = false;
+    renderPicker();
+    renderResult();
+  });
+
+  document.getElementById("result-card").addEventListener("click", function (e) {
+    var toggle = e.target.closest("#reason-toggle");
+    if (toggle) {
+      state.reasonOpen = !state.reasonOpen;
+      renderResult();
+      return;
+    }
+    var decideBtn = e.target.closest("[data-decide]");
+    if (decideBtn) {
+      state.decisions[state.selectedSku] = decideBtn.dataset.decide;
+      renderResult();
+    }
+  });
+
+  /* ---------------- PRODUCT TABLE ---------------- */
+
+  function filteredRows() {
+    if (state.filter === "push") return TABLE_ROWS.filter(function (r) { return r.verdict === "push"; });
+    if (state.filter === "fine") return TABLE_ROWS.filter(function (r) { return r.verdict !== "push"; });
+    return TABLE_ROWS;
+  }
+
+  function renderTable() {
+    var rows = filteredRows();
+    document.getElementById("inventory-body").innerHTML = rows.map(function (r) {
+      var s = STATUS[r.verdict];
+      var toolChips = (r.tools || []).map(function (t) { return '<span class="tool-chip">' + t + "()</span>"; }).join("");
+      return (
+        "<tr>" +
+          '<td class="cell-product">' + esc(r.name) + '<span class="cell-sku">' + esc(r.sku) + "</span></td>" +
+          '<td class="cell-num">' + r.stock + " units</td>" +
+          '<td class="cell-num tech-col">' + r.ratio.toFixed(1) + "x</td>" +
+          '<td class="tech-col"><div class="tool-chips">' + toolChips + "</div></td>" +
+          '<td><span class="pill ' + s.pill + '">' + s.label + "</span></td>" +
+        "</tr>"
+      );
+    }).join("");
+    document.getElementById("table-foot").textContent = "Showing " + rows.length + " of " + TABLE_ROWS.length + " products";
+  }
+
+  document.getElementById("filter-group").addEventListener("click", function (e) {
+    var btn = e.target.closest(".filter-btn");
+    if (!btn) return;
+    state.filter = btn.dataset.filter;
+    Array.prototype.forEach.call(document.querySelectorAll(".filter-btn"), function (b) {
+      b.classList.toggle("is-active", b === btn);
+    });
+    renderTable();
+  });
+
+  document.getElementById("detail-check").addEventListener("change", function (e) {
+    document.getElementById("inventory-table").classList.toggle("show-tech", e.target.checked);
+  });
+
+  /* ---------------- INIT ---------------- */
+
+  renderPicker();
+  renderResult();
+  renderTable();
+})();
+</script>
+</body>
+</html>
