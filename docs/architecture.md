@@ -1,6 +1,6 @@
 # Agentic Architecture Design
 
-This document outlines the system architecture for the Autonomous Brand Manager Agent, detailing how it leverages the ReAct (Reason + Act) methodology to manage e-commerce marketing with built-in enterprise safety mechanisms.
+This document outlines the system architecture for the Brand Manager Agent, detailing how it leverages the ReAct (Reason + Act) methodology to manage e-commerce marketing with built-in enterprise safety mechanisms.
 
 ## Core Pipeline: The ReAct Loop
 

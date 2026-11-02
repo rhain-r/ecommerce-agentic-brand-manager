@@ -1,4 +1,4 @@
-# Autonomous Brand Manager Agent
+# Brand Manager Agent
 
 An Agentic AI system that operates as an autonomous digital marketer. Unlike linear automations, this agent utilizes a reasoning loop to monitor e-commerce inventory, make independent decisions about what needs to be promoted, and use tools to draft, review, and schedule marketing campaigns.
 

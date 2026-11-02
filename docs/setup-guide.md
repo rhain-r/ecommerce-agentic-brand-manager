@@ -1,6 +1,6 @@
 # Local Setup Guide
 
-Follow these instructions to run the Autonomous Brand Manager Agent on your local machine.
+Follow these instructions to run the Brand Manager Agent on your local machine.
 
 ## Prerequisites
 - **Python 3.9+**
